@@ -15,13 +15,14 @@ document.getElementById('form').addEventListener('submit', function onSubmitForm
 
     const vendorInput = document.getElementById('vendor-name');
     const moduleInput = document.getElementById('module-name');
+    const clearCacheCheckbox = document.getElementById('clear-cache');
 
     document.getElementById('modal').style.display = 'block'
     editorModal.setValue(execute({
         vendor: vendorInput.value,
         module: moduleInput.value,
         config: parseConfig(editor.getValue()),
-        includeClearCache: true
+        includeClearCache: clearCacheCheckbox.checked
     }), -1)
 })
 

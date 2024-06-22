@@ -31,6 +31,7 @@ export function parseConfig(value) {
                                 showInStore: field['@_showInStore'],
                                 canRestore: field['@_canRestore'],
 
+                                sourceModel: field['source_model'],
                                 backendModel: field['backend_model'],
                                 configPath: field['config_path'] ? field['config_path'] : `${section['@_id']}/${group['@_id']}/${field['@_id']}`,
 

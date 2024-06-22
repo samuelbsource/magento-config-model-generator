@@ -13,10 +13,10 @@ function generateSerializedAccess(field) {
      * Get unserialized value of ${field.configPath}
      *
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return array
      */
-    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, $scopeCode = null): array
+    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, ?string $scopeCode = null): array
     {
         $valueSerialized = $this->getValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
         return $this->serializer->unserialize($valueSerialized ?: '[]');
@@ -27,33 +27,45 @@ function generateSerializedAccess(field) {
      *
      * @param mixed $value
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return bool
      */
-    public function has${changeCase.pascalCase(field.id)}($value, string $scopeType = self::${scope}, $scopeCode = null): bool
+    public function has${changeCase.pascalCase(field.id)}($value, string $scopeType = self::${scope}, ?string $scopeCode = null): bool
     {
         return in_array($value, $this->get${changeCase.pascalCase(field.id)}($scopeType, $scopeCode));
     }
 
     /**
-     * Set or reset the value of ${field.configPath}
+     * Set the value of ${field.configPath}
      *
-     * @param array|string|null $value - If null, the value is reset to the default value.
+     * @param array|string $value
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return self
      * @throws LocalizedException
      */
-    public function set${changeCase.pascalCase(field.id)}($value, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): self
+    public function set${changeCase.pascalCase(field.id)}($value, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
     {
-        if ($value === null) {
-            $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
-        } elseif (is_array($value)) {
+        if (is_array($value)) {
             $valueSerialized = $this->serializer->serialize($value);
             $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $valueSerialized, $scopeType, $scopeCode);
         } else {
             $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $value, $scopeType, $scopeCode);
         }
+        return $this;
+    }
+    
+    /**
+     * Delete ${field.configPath} which resets it's value to the default.
+     *
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return self
+     * @throws LocalizedException
+     */
+    public function delete${changeCase.pascalCase(field.id)}(string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
+    {
+        $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
         return $this;
     }\
 `;
@@ -72,10 +84,10 @@ function generateArrayAccess(field) {
      * Get unserialized value of ${field.configPath}
      *
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return array
      */
-    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, $scopeCode = null): array
+    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, ?string $scopeCode = null): array
     {
         $valueSerialized = $this->getValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
         return empty($valueSerialized) ? [] : explode(',', $valueSerialized);
@@ -86,33 +98,45 @@ function generateArrayAccess(field) {
      *
      * @param mixed $value
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return bool
      */
-    public function has${changeCase.pascalCase(field.id)}($value, string $scopeType = self::${scope}, $scopeCode = null): bool
+    public function has${changeCase.pascalCase(field.id)}($value, string $scopeType = self::${scope}, ?string $scopeCode = null): bool
     {
         return in_array($value, $this->get${changeCase.pascalCase(field.id)}($scopeType, $scopeCode));
     }
 
     /**
-     * Set or reset the value of ${field.configPath}
+     * Set the value of ${field.configPath}
      *
-     * @param array|string|null $value - If null, the value is reset to the default value.
+     * @param array|string $value
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return self
      * @throws LocalizedException
      */
-    public function set${changeCase.pascalCase(field.id)}($value, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): self
+    public function set${changeCase.pascalCase(field.id)}($value, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
     {
-        if ($value === null) {
-            $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
-        } elseif (is_array($value)) {
+        if (is_array($value)) {
             $valueSerialized = implode(',', $value);
             $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $valueSerialized, $scopeType, $scopeCode);
         } else {
             $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $value, $scopeType, $scopeCode);
         }
+        return $this;
+    }
+    
+    /**
+     * Delete ${field.configPath} which resets it's value to the default.
+     *
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return self
+     * @throws LocalizedException
+     */
+    public function delete${changeCase.pascalCase(field.id)}(string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
+    {
+        $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
         return $this;
     }\
 `;
@@ -131,30 +155,92 @@ function generateStringAccess(field) {
      * Get the value of ${field.configPath}
      * 
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return string|null
      */
-    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, $scopeCode = null): ?string
+    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, ?string $scopeCode = null): ?string
     {
         return $this->getValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
     }
 
     /**
-     * Set or reset the value of ${field.configPath}
+     * Set the value of ${field.configPath}
      * 
-     * @param string|null $value - If null, the value is reset to the default value.
+     * @param string $value
      * @param string $scopeType
-     * @param null $scopeCode
+     * @param string|null $scopeCode
      * @return self
      * @throws LocalizedException
      */
-    public function set${changeCase.pascalCase(field.id)}($value, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): self
+    public function set${changeCase.pascalCase(field.id)}(string $value, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
     {
-        if ($value === null) {
-            $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
-        } else {
-            $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $value, $scopeType, $scopeCode);
-        }
+        $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $value, $scopeType, $scopeCode);
+        return $this;
+    }
+
+    /**
+     * Delete ${field.configPath} which resets it's value to the default.
+     *
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return self
+     * @throws LocalizedException
+     */
+    public function delete${changeCase.pascalCase(field.id)}(string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
+    {
+        $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
+        return $this;
+    }\
+`;
+}
+
+function generateBoolAccess(field) {
+    let scope = 'SCOPE_DEFAULT';
+    if (field.showInStore === '1') {
+        scope = 'SCOPE_STORE';
+    } else if (field.showInWebsite === '1') {
+        scope = 'SCOPE_WEBSITE';
+    }
+
+    return `
+    /**
+     * Get the value of ${field.configPath}
+     * 
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return bool
+     */
+    public function get${changeCase.pascalCase(field.id)}(string $scopeType = self::${scope}, ?string $scopeCode = null): bool
+    {
+        return $this->getValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode) === '1';
+    }
+
+    /**
+     * Set the value of ${field.configPath}
+     * 
+     * @param bool $value
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return self
+     * @throws LocalizedException
+     */
+    public function set${changeCase.pascalCase(field.id)}(bool $value, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
+    {
+        $this->setValue(self::XML_${changeCase.constantCase(field.id)}, $value ? '1' : '0', $scopeType, $scopeCode);
+        return $this;
+    }
+
+    /**
+     * Delete ${field.configPath} which resets it's value to the default.
+     *
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @return self
+     * @throws LocalizedException
+     */
+    public function delete${changeCase.pascalCase(field.id)}(string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
+    {
+        $this->deleteValue(self::XML_${changeCase.constantCase(field.id)}, $scopeType, $scopeCode);
         return $this;
     }\
 `;
@@ -170,8 +256,8 @@ namespace ${data.vendor}\\${data.module}\\Model;
 use Magento\\Framework\\App\\Config\\ScopeConfigInterface;
 use Magento\\Framework\\App\\Config\\Storage\\WriterInterface;
 use Magento\\Framework\\App\\Cache\\TypeListInterface;
-use Magento\\Framework\\Exception\\LocalizedException;
-use Magento\\Config\\App\\Config\\Type\\System;
+use Magento\\Framework\\Exception\\LocalizedException;${!data.includeClearCache ? "" : `
+use Magento\\Config\\App\\Config\\Type\\System;`}
 use Magento\\Store\\Model\\StoreManagerInterface;
 use Magento\\Framework\\Serialize\\Serializer\\Json;
 
@@ -180,7 +266,7 @@ class Config
     public const SCOPE_STORE = \\Magento\\Store\\Model\\ScopeInterface::SCOPE_STORE;
     public const SCOPE_WEBSITE = \\Magento\\Store\\Model\\ScopeInterface::SCOPE_WEBSITE;
     public const SCOPE_DEFAULT = \\Magento\\Framework\\App\\ScopeInterface::SCOPE_DEFAULT;\
-${ !data.config.fields.length ? '\n\n' : ('\n' + data.config.fields.map(field => `    protected const XML_${changeCase.constantCase(field.id)} = '${field.configPath}';`).join('\n') + "\n\n") }\
+${!data.config.fields.length ? '\n\n' : ('\n' + data.config.fields.map(field => `    protected const XML_${changeCase.constantCase(field.id)} = '${field.configPath}';`).join('\n') + "\n\n")}\
 \
     /**
      * @var ScopeConfigInterface
@@ -236,23 +322,25 @@ ${!data.includeClearCache ? "" : `
         $this->serializer = $serializer;
     }
 \
-${ !data.config.fields.length ? '\n' : (data.config.fields.map(field => {
-    if (field.backendModel !== undefined) {
-        return generateSerializedAccess(field)
-    } else if (field.type === 'multiselect') {
-        return generateArrayAccess(field)
-    } else {
-        return generateStringAccess(field)
-    }
-}).join('\n') + "\n\n") }\
+${!data.config.fields.length ? '\n' : (data.config.fields.map(field => {
+        if (field.backendModel !== undefined) {
+            return generateSerializedAccess(field)
+        } else if (field.type === 'multiselect') {
+            return generateArrayAccess(field)
+        } else if (field.sourceModel && (field.sourceModel.toLowerCase().includes('enabledisable') || field.sourceModel.toLowerCase().includes('yesno'))) {
+            return generateBoolAccess(field)
+        } else {
+            return generateStringAccess(field)
+        }
+    }).join('\n') + "\n\n")}\
 \
     /**
      * @param string $path
      * @param string $scopeType
-     * @param string|integer|null $scopeCode
+     * @param string|null $scopeCode
      * @return string|null
      */
-    protected function getValue(string $path, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): ?string
+    protected function getValue(string $path, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): ?string
     {
         return $this->configReader->getValue($path, $scopeType, $scopeCode !== null ? $scopeCode : $this->getScopeCode($scopeType));
     }
@@ -261,11 +349,11 @@ ${ !data.config.fields.length ? '\n' : (data.config.fields.map(field => {
      * @param string $path
      * @param string $value
      * @param string $scopeType
-     * @param string|integer|null $scopeCode
+     * @param string|null $scopeCode
      * @return self
      * @throws LocalizedException
      */
-    protected function setValue(string $path, string $value, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): self
+    protected function setValue(string $path, string $value, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
     {
         $this->configWriter->save($path, $value, $scopeType, $scopeCode !== null ? $scopeCode : $this->getScopeCode($scopeType));
         $this->cacheTypeList->invalidate(\\Magento\\Framework\\App\\Cache\\Type\\Config::TYPE_IDENTIFIER);
@@ -275,11 +363,11 @@ ${ !data.config.fields.length ? '\n' : (data.config.fields.map(field => {
     /**
      * @param string $path
      * @param string $scopeType
-     * @param string|integer|null $scopeCode
+     * @param string|null $scopeCode
      * @return self
      * @throws LocalizedException
      */
-    protected function deleteValue(string $path, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): self
+    protected function deleteValue(string $path, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): self
     {
         $this->configWriter->delete($path, $scopeType, $scopeCode !== null ? $scopeCode : $this->getScopeCode($scopeType));
         $this->cacheTypeList->invalidate(\\Magento\\Framework\\App\\Cache\\Type\\Config::TYPE_IDENTIFIER);
@@ -289,10 +377,10 @@ ${ !data.config.fields.length ? '\n' : (data.config.fields.map(field => {
     /**
      * @param string $path
      * @param string $scopeType
-     * @param string|integer|null $scopeCode
+     * @param string|null $scopeCode
      * @return bool
      */
-    protected function isSetFlag(string $path, string $scopeType = self::SCOPE_DEFAULT, $scopeCode = null): bool
+    protected function isSetFlag(string $path, string $scopeType = self::SCOPE_DEFAULT, ?string $scopeCode = null): bool
     {
         return $this->configReader->isSetFlag($path, $scopeType, $scopeCode !== null ? $scopeCode : $this->getScopeCode($scopeType));
     }
